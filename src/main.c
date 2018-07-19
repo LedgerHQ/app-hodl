@@ -68,7 +68,12 @@ enum coin_type_e {
     COIN_TYPE_RIPPLE = 23,    
     COIN_TYPE_STELLAR = 24,
     COIN_TYPE_NEO = 25,
-    COIN_TYPE_ARK = 26
+    COIN_TYPE_ARK = 26,
+//    COIN_TYPE_NANO = 27,
+//    COIN_TYPE_NIMIQ = 28,
+    COIN_TYPE_ZCOIN = 29,
+    COIN_TYPE_TRON = 30
+    
 };
 typedef enum coin_type_e coin_type_t;
 
@@ -282,10 +287,14 @@ void menu_coin_selected(uint32_t coin) {
         case COIN_TYPE_ETHEREUM_CLASSIC:
         case COIN_TYPE_RIPPLE:        
         case COIN_TYPE_NEO:
-        case COIN_TYPE_ARK:        
+        case COIN_TYPE_ARK:   
+//        case COIN_TYPE_NANO:
+        case COIN_TYPE_ZCOIN:
+        case COIN_TYPE_TRON:  
             UX_MENU_DISPLAY(0, menu_accounts, menu_accounts_preprocessor);
             break;
         case COIN_TYPE_STELLAR:
+//        case COIN_TYPE_NIMIQ:
             UX_MENU_DISPLAY(0, menu_accounts_noindex, menu_accounts_noindex_preprocessor);
             break;        
         default:
@@ -414,6 +423,9 @@ void handle_btc_address(uint8_t *publicAddress) {
         case COIN_TYPE_ZENCASH:
             version = 8329;
             break;
+        case COIN_TYPE_ZCOIN:
+            version = 82;
+            break;
         case COIN_TYPE_BITCOIN_CASH:
             version = 0;
             break;
@@ -494,6 +506,28 @@ void handle_btc_address(uint8_t *publicAddress) {
     }    
 }
 
+void handle_tron_address(uint8_t *publicAddress) {
+    union {
+        cx_sha3_t sha3;
+        cx_sha256_t sha2;
+    } u;
+    uint8_t hash[32];
+    uint8_t address[25];
+    cx_keccak_init(&u.sha3, 256);
+    cx_hash((cx_hash_t *)&u.sha3, CX_LAST, publicAddress + 1, 64, hash);
+    os_memmove(address, hash + 11, 21);
+    address[0] = 0x41;
+    uint8_t checkSum[4];
+    uint32_t addressLength;
+    cx_sha256_init(&u.sha2);
+    cx_hash(&u.sha2, CX_LAST, address, 21, hash);
+    cx_sha256_init(&u.sha2);
+    cx_hash(&u.sha2, CX_LAST, hash, 32, hash);
+    os_memmove(address+21, hash, 4);
+    addressLength = hodl_encode_base58(N_BTC_BASE58_ALPHABET, address, 25, G_io_apdu_buffer, 255);
+    G_io_apdu_buffer[addressLength] = '\0';
+}
+
 void handle_neo_address(uint8_t *publicAddress) {
     union {
         cx_sha256_t sha;
@@ -564,8 +598,12 @@ void menu_generate(uint32_t dummy) {
             curve = CX_CURVE_256R1;
             break;
         case COIN_TYPE_STELLAR:
+//        case COIN_TYPE_NIMIQ:
             curve = CX_CURVE_Ed25519;
             break;
+/*        case COIN_TYPE_NANO:
+            curve = CX_CURVE_Ed25519;
+            break;*/
     }
     switch(coinType) {
         case COIN_TYPE_BITCOIN:        
@@ -647,11 +685,24 @@ void menu_generate(uint32_t dummy) {
         case COIN_TYPE_ARK:
             derivePath[1] = 0x8000006f;
             break;
+/*        case COIN_TYPE_NANO:
+            derivePath[1] = 0x800000a5;
+            break;
+        case COIN_TYPE_NIMIQ:
+            derivePath[1] = 0x800000f2;
+            break;*/
+        case COIN_TYPE_ZCOIN:
+            derivePath[1] = 0x80000088;
+            break;
+        case COIN_TYPE_TRON:
+            derivePath[1] = 0x800000c3;
+            break;
     }
 
     derivePath[2] = 0x80000000 | coinAccount;
     switch(coinType) {
         case COIN_TYPE_STELLAR:
+//        case COIN_TYPE_NIMIQ:
             derivePathLength = 3;
             break;
         default:            
@@ -690,6 +741,7 @@ void menu_generate(uint32_t dummy) {
         case COIN_TYPE_ZCASH:
         case COIN_TYPE_ZENCASH:
         case COIN_TYPE_ARK:
+        case COIN_TYPE_ZCOIN:
             handle_btc_address(publicKey.W);
             break;
         case COIN_TYPE_ETHEREUM:
@@ -697,10 +749,14 @@ void menu_generate(uint32_t dummy) {
             handle_eth_address(publicKey.W);
             break;
         case COIN_TYPE_STELLAR:
+//        case COIN_TYPE_NIMIQ:
             handle_stellar_address(publicKey.W);
             break;
         case COIN_TYPE_NEO:
             handle_neo_address(publicKey.W);
+            break;
+        case COIN_TYPE_TRON:
+            handle_tron_address(publicKey.W);
             break;
         default:
             THROW(EXCEPTION);
@@ -779,7 +835,9 @@ const ux_menu_entry_t menu_coins[] = {
     { NULL, menu_coin_selected, COIN_TYPE_HCASH, &C_nanos_badge_hcash, "Hcash", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_KOMODO, &C_nanos_badge_komodo, "Komodo", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_LITECOIN, &C_nanos_badge_litecoin, "Litecoin", NULL, 50, 29},
+    //    { NULL, menu_coin_selected, COIN_TYPE_NANO, &C_icon_nano, "Nano", NULL, 50, 29},        
     { NULL, menu_coin_selected, COIN_TYPE_NEO, &C_icon_neo, "Neo", NULL, 50, 29},        
+//    { NULL, menu_coin_selected, COIN_TYPE_NIMIQ, &C_icon_nimiq, "Nimiq", NULL, 50, 29},        
     { NULL, menu_coin_selected, COIN_TYPE_PEERCOIN, &C_nanos_badge_peercoin, "Peercoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_PIVX, &C_nanos_badge_pivx, "PivX", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_POSW, &C_nanos_badge_posw, "PoSW", NULL, 50, 29},
@@ -788,9 +846,11 @@ const ux_menu_entry_t menu_coins[] = {
     { NULL, menu_coin_selected, COIN_TYPE_STEALTHCOIN, &C_nanos_badge_stealthcoin, "Stealthcoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_STELLAR, &C_icon_stellar, "Stellar", NULL, 50, 29},    
     { NULL, menu_coin_selected, COIN_TYPE_STRATIS, &C_nanos_badge_stratis, "Stratis", NULL, 50, 29},
+    { NULL, menu_coin_selected, COIN_TYPE_TRON, &C_nanos_badge_tron, "Tron", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_VERTCOIN, &C_nanos_badge_vertcoin, "Vertcoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_VIACOIN, &C_nanos_badge_viacoin, "Viacoin", NULL, 50, 29},    
     { NULL, menu_coin_selected, COIN_TYPE_ZCASH, &C_nanos_badge_zcash, "Zcash", NULL, 50, 29},
+    { NULL, menu_coin_selected, COIN_TYPE_ZCOIN, &C_nanos_badge_zcoin, "Zcoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_ZENCASH, &C_nanos_badge_zencash, "ZenCash", NULL, 50, 29},
     {menu_main, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
     UX_MENU_END};
@@ -834,7 +894,7 @@ const ux_menu_entry_t menu_accounts_noindex[] = {
     UX_MENU_END};
 
 const ux_menu_entry_t menu_main[] = {
-    {menu_coins, NULL, 0, NULL, "Generate address", NULL, 0, 0},
+    {menu_coins, NULL, 0, NULL, "New address", NULL, 0, 0},
     {menu_settings, NULL, 0, NULL, "Settings", NULL, 0, 0},
     {menu_about, NULL, 0, NULL, "About", NULL, 0, 0},
     {NULL, os_sched_exit, 0, &C_icon_dashboard, "Quit app", NULL, 50, 29},
@@ -862,6 +922,7 @@ unsigned int ui_display_address_nanos_prepro(const bagl_element_t* element) {
 unsigned int ui_display_address_nanos_button(unsigned int button_mask, unsigned int button_mask_counter) {
     switch(coinType) {
         case COIN_TYPE_STELLAR:
+//        case COIN_TYPE_NIMIQ:
             UX_MENU_DISPLAY(0, menu_accounts_noindex, menu_accounts_noindex_preprocessor);
             break;
         default:
