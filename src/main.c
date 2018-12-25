@@ -66,7 +66,7 @@ enum coin_type_e {
     COIN_TYPE_ZENCASH = 20,
     COIN_TYPE_ETHEREUM = 21,
     COIN_TYPE_ETHEREUM_CLASSIC = 22,
-    COIN_TYPE_RIPPLE = 23,    
+    COIN_TYPE_RIPPLE = 23,
     COIN_TYPE_STELLAR = 24,
     COIN_TYPE_NEO = 25,
     COIN_TYPE_ARK = 26,
@@ -74,7 +74,7 @@ enum coin_type_e {
 //    COIN_TYPE_NIMIQ = 28,
     COIN_TYPE_ZCOIN = 29,
     COIN_TYPE_TRON = 30
-    
+
 };
 typedef enum coin_type_e coin_type_t;
 
@@ -202,7 +202,7 @@ const bagl_element_t ui_display_address_nanos[] = {
   {{BAGL_ICON                           , 0x00,   3,  12,   7,   7, 0, 0, 0        , 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_CROSS  }, NULL, 0, 0, 0, NULL, NULL, NULL },
   {{BAGL_ICON                           , 0x00, 117,  13,   8,   6, 0, 0, 0        , 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_CHECK  }, NULL, 0, 0, 0, NULL, NULL, NULL },
 
-  //{{BAGL_ICON                           , 0x01,  21,   9,  14,  14, 0, 0, 0        , 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_TRANSACTION_BADGE  }, NULL, 0, 0, 0, NULL, NULL, NULL },  
+  //{{BAGL_ICON                           , 0x01,  21,   9,  14,  14, 0, 0, 0        , 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_TRANSACTION_BADGE  }, NULL, 0, 0, 0, NULL, NULL, NULL },
   {{BAGL_LABELINE                       , 0x01,   0,  12, 128,  12, 0, 0, 0        , 0xFFFFFF, 0x000000, BAGL_FONT_OPEN_SANS_EXTRABOLD_11px|BAGL_FONT_ALIGNMENT_CENTER, 0  }, "Confirm", 0, 0, 0, NULL, NULL, NULL },
   {{BAGL_LABELINE                       , 0x01,   0,  26, 128,  12, 0, 0, 0        , 0xFFFFFF, 0x000000, BAGL_FONT_OPEN_SANS_EXTRABOLD_11px|BAGL_FONT_ALIGNMENT_CENTER, 0  }, "address", 0, 0, 0, NULL, NULL, NULL },
 
@@ -281,12 +281,12 @@ void menu_coin_selected(uint32_t coin) {
             break;
         case COIN_TYPE_BITCOIN_GOLD:
         case COIN_TYPE_DIGIBYTE:
-        case COIN_TYPE_LITECOIN:        
+        case COIN_TYPE_LITECOIN:
             UX_MENU_DISPLAY(0, menu_address_encoding_btc_segwit, NULL);
-            break;        
+            break;
         case COIN_TYPE_BITCOIN_CASH:
             UX_MENU_DISPLAY(0, menu_address_encoding_bch, NULL);
-            break;         
+            break;
         case COIN_TYPE_BITCOIN_PRIVATE:
         case COIN_TYPE_DASH:
         case COIN_TYPE_DOGECOIN:
@@ -302,18 +302,18 @@ void menu_coin_selected(uint32_t coin) {
         case COIN_TYPE_ZENCASH:
         case COIN_TYPE_ETHEREUM:
         case COIN_TYPE_ETHEREUM_CLASSIC:
-        case COIN_TYPE_RIPPLE:        
+        case COIN_TYPE_RIPPLE:
         case COIN_TYPE_NEO:
-        case COIN_TYPE_ARK:   
+        case COIN_TYPE_ARK:
 //        case COIN_TYPE_NANO:
         case COIN_TYPE_ZCOIN:
-        case COIN_TYPE_TRON:  
+        case COIN_TYPE_TRON:
             UX_MENU_DISPLAY(0, menu_accounts, menu_accounts_preprocessor);
             break;
         case COIN_TYPE_STELLAR:
 //        case COIN_TYPE_NIMIQ:
             UX_MENU_DISPLAY(0, menu_accounts_noindex, menu_accounts_noindex_preprocessor);
-            break;        
+            break;
         default:
             UX_MENU_DISPLAY(0, menu_main, NULL);
             break;
@@ -329,7 +329,7 @@ const bagl_element_t*  menu_accounts_preprocessor(const ux_menu_entry_t* entry, 
                 break;
             case COIN_TYPE_RIPPLE:
                 //element->icon = &C_icon_ripple;
-                break;                
+                break;
         }
         snprintf(accountInfo, sizeof(accountInfo), "/%d/%d", coinAccount, coinIndex);
         //element->line1 = accountInfo;
@@ -348,7 +348,7 @@ const bagl_element_t*  menu_accounts_noindex_preprocessor(const ux_menu_entry_t*
                 break;
             case COIN_TYPE_RIPPLE:
                 //element->icon = &C_icon_ripple;
-                break;                
+                break;
         }
         snprintf(accountInfo, sizeof(accountInfo), "/%d", coinAccount);
         //element->line1 = accountInfo;
@@ -360,7 +360,7 @@ const bagl_element_t*  menu_accounts_noindex_preprocessor(const ux_menu_entry_t*
 
 
 void compress_ecdsa(uint8_t *publicAddress) {
-    publicAddress[0] = ((publicAddress[64] & 1) ? 0x03 : 0x02);    
+    publicAddress[0] = ((publicAddress[64] & 1) ? 0x03 : 0x02);
 }
 
 void handle_btc_address(uint8_t *publicAddress) {
@@ -388,10 +388,10 @@ void handle_btc_address(uint8_t *publicAddress) {
             break;
         case COIN_TYPE_BITCOIN_GOLD:
             version = (addressEncoding == ADDRESS_ENCODING_SEGWIT ? 38 : 23);
-            break;        
+            break;
         case COIN_TYPE_BITCOIN_PRIVATE:
             version = 4901;
-            break;                
+            break;
         case COIN_TYPE_DASH:
             version = 76;
             break;
@@ -454,7 +454,7 @@ void handle_btc_address(uint8_t *publicAddress) {
             break;
         default:
             THROW(EXCEPTION);
-    } 
+    }
     switch(addressEncoding) {
         case ADDRESS_ENCODING_SEGWIT:
         case ADDRESS_ENCODING_BECH32:
@@ -469,14 +469,14 @@ void handle_btc_address(uint8_t *publicAddress) {
         case ADDRESS_ENCODING_LEGACY:
             break;
         default:
-            THROW(EXCEPTION);            
+            THROW(EXCEPTION);
     }
     switch(addressEncoding) {
         case ADDRESS_ENCODING_LEGACY:
         case ADDRESS_ENCODING_SEGWIT: {
             uint8_t *addressData;
             uint8_t addressLength;
-            if (addressEncoding == ADDRESS_ENCODING_SEGWIT) {                                
+            if (addressEncoding == ADDRESS_ENCODING_SEGWIT) {
                 addressData = scriptAddress;
                 addressLength = 22;
             }
@@ -520,7 +520,7 @@ void handle_btc_address(uint8_t *publicAddress) {
         case ADDRESS_ENCODING_CASHADDR:
             cashaddr_encode(scriptAddress + 2, 20, G_io_apdu_buffer, 255, CASHADDR_P2PKH);
             break;
-    }    
+    }
 }
 
 void handle_tron_address(uint8_t *publicAddress) {
@@ -555,20 +555,20 @@ void handle_neo_address(uint8_t *publicAddress) {
     uint8_t addressBuffer[1 + 20 + 4];
     uint32_t addressLength;
     compress_ecdsa(publicAddress);
-    addressBuffer[0] = 0x17;    
+    addressBuffer[0] = 0x17;
     tmpBuffer[0] = 0x21;
     os_memmove(tmpBuffer + 1, publicAddress, 33);
     tmpBuffer[34] = 0xac;
     cx_sha256_init(&u.sha);
     cx_hash(&u.sha.header, CX_LAST, tmpBuffer, 35, checksumBuffer);
-    cx_ripemd160_init(&u.rip);    
+    cx_ripemd160_init(&u.rip);
     cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, addressBuffer + 1);
     checksumBuffer[0] = 0x17;
     os_memmove(checksumBuffer + 1, addressBuffer + 1, 20);
     cx_sha256_init(&u.sha);
     cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 21, checksumBuffer);
     cx_sha256_init(&u.sha);
-    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer);    
+    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
     os_memmove(addressBuffer + 1 + 20, checksumBuffer, 4);
     addressLength = hodl_encode_base58(N_BTC_BASE58_ALPHABET, addressBuffer, 25, G_io_apdu_buffer, 255);
     G_io_apdu_buffer[addressLength] = '\0';
@@ -583,7 +583,7 @@ void handle_stellar_address(uint8_t *publicAddress) {
     }
     if ((publicAddress[32] & 1) != 0) {
         publicKey[31] |= 0x80;
-    }        
+    }
     buffer[0] = 6 << 3; // version bit 'G'
     for (i = 0; i < 32; i++) {
         buffer[i+1] = publicKey[i];
@@ -623,12 +623,12 @@ void menu_generate(uint32_t dummy) {
             break;*/
     }
     switch(coinType) {
-        case COIN_TYPE_BITCOIN:        
+        case COIN_TYPE_BITCOIN:
             derivePath[1] = 0x80000000;
             break;
         case COIN_TYPE_BITCOIN_GOLD:
             derivePath[1] = 0x8000009c;
-            break;            
+            break;
         case COIN_TYPE_BITCOIN_PRIVATE:
             derivePath[1] = 0x800000b7;
             break;
@@ -650,7 +650,7 @@ void menu_generate(uint32_t dummy) {
             break;
         case COIN_TYPE_ETHEREUM_CLASSIC:
             derivePath[1] = 0x8000003d;
-            break;            
+            break;
         case COIN_TYPE_HCASH:
             derivePath[1] = 0x800000ab;
             break;
@@ -662,7 +662,7 @@ void menu_generate(uint32_t dummy) {
             break;
         case COIN_TYPE_PEERCOIN:
             derivePath[1] = 0x80000006;
-            break;        
+            break;
         case COIN_TYPE_PIVX:
             derivePath[1] = 0x80000077;
             break;
@@ -689,13 +689,13 @@ void menu_generate(uint32_t dummy) {
             break;
         case COIN_TYPE_ZENCASH:
             derivePath[1] = 0x80000079;
-            break;            
+            break;
         case COIN_TYPE_RIPPLE:
             derivePath[1] = 0x80000090;
             break;
         case COIN_TYPE_STELLAR:
             derivePath[1] = 0x80000094;
-            break;            
+            break;
         case COIN_TYPE_NEO:
             derivePath[1] = 0x80000378;
             break;
@@ -722,10 +722,10 @@ void menu_generate(uint32_t dummy) {
 //        case COIN_TYPE_NIMIQ:
             derivePathLength = 3;
             break;
-        default:            
+        default:
             derivePath[3] = 0;
             derivePath[4] = coinIndex;
-            derivePathLength = 5;            
+            derivePathLength = 5;
             break;
     }
     os_perso_derive_node_bip32(curve, derivePath, derivePathLength, privateComponent, NULL);
@@ -777,7 +777,7 @@ void menu_generate(uint32_t dummy) {
             break;
         default:
             THROW(EXCEPTION);
-    }    
+    }
 
     type_address(G_io_apdu_buffer);
 
@@ -798,7 +798,7 @@ void menu_index_previous(uint32_t dummy) {
         coinIndex--;
     }
     UX_MENU_DISPLAY(0, menu_accounts, menu_accounts_preprocessor);
-}    
+}
 
 void menu_account_next(uint32_t dummy) {
     UNUSED(dummy);
@@ -812,7 +812,7 @@ void menu_account_previous(uint32_t dummy) {
         coinAccount--;
     }
     UX_MENU_DISPLAY(0, menu_accounts, menu_accounts_preprocessor);
-}    
+}
 
 void menu_account_noindex_next(uint32_t dummy) {
     UNUSED(dummy);
@@ -826,8 +826,8 @@ void menu_account_noindex_previous(uint32_t dummy) {
         coinAccount--;
     }
     UX_MENU_DISPLAY(0, menu_accounts_noindex, menu_accounts_noindex_preprocessor);
-}    
-    
+}
+
 const ux_menu_entry_t menu_settings[] = {
     {NULL, menu_settings_layout_init, 0, NULL, "Keyboard layout", NULL, 0, 0},
     {menu_main, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
@@ -852,20 +852,20 @@ const ux_menu_entry_t menu_coins[] = {
     { NULL, menu_coin_selected, COIN_TYPE_HCASH, &C_nanos_badge_hcash, "Hcash", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_KOMODO, &C_nanos_badge_komodo, "Komodo", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_LITECOIN, &C_nanos_badge_litecoin, "Litecoin", NULL, 50, 29},
-    //    { NULL, menu_coin_selected, COIN_TYPE_NANO, &C_icon_nano, "Nano", NULL, 50, 29},        
-    { NULL, menu_coin_selected, COIN_TYPE_NEO, &C_icon_neo, "Neo", NULL, 50, 29},        
-//    { NULL, menu_coin_selected, COIN_TYPE_NIMIQ, &C_icon_nimiq, "Nimiq", NULL, 50, 29},        
+    //    { NULL, menu_coin_selected, COIN_TYPE_NANO, &C_icon_nano, "Nano", NULL, 50, 29},
+    { NULL, menu_coin_selected, COIN_TYPE_NEO, &C_icon_neo, "Neo", NULL, 50, 29},
+//    { NULL, menu_coin_selected, COIN_TYPE_NIMIQ, &C_icon_nimiq, "Nimiq", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_PEERCOIN, &C_nanos_badge_peercoin, "Peercoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_PIVX, &C_nanos_badge_pivx, "PivX", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_POSW, &C_nanos_badge_posw, "PoSW", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_QTUM, &C_nanos_badge_qtum, "Qtum", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_RIPPLE, &C_icon_ripple, "Ripple", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_STEALTHCOIN, &C_nanos_badge_stealthcoin, "Stealthcoin", NULL, 50, 29},
-    { NULL, menu_coin_selected, COIN_TYPE_STELLAR, &C_icon_stellar, "Stellar", NULL, 50, 29},    
+    { NULL, menu_coin_selected, COIN_TYPE_STELLAR, &C_icon_stellar, "Stellar", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_STRATIS, &C_nanos_badge_stratis, "Stratis", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_TRON, &C_nanos_badge_tron, "Tron", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_VERTCOIN, &C_nanos_badge_vertcoin, "Vertcoin", NULL, 50, 29},
-    { NULL, menu_coin_selected, COIN_TYPE_VIACOIN, &C_nanos_badge_viacoin, "Viacoin", NULL, 50, 29},    
+    { NULL, menu_coin_selected, COIN_TYPE_VIACOIN, &C_nanos_badge_viacoin, "Viacoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_ZCASH, &C_nanos_badge_zcash, "Zcash", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_ZCOIN, &C_nanos_badge_zcoin, "Zcoin", NULL, 50, 29},
     { NULL, menu_coin_selected, COIN_TYPE_ZENCASH, &C_nanos_badge_zencash, "ZenCash", NULL, 50, 29},
@@ -945,7 +945,7 @@ unsigned int ui_display_address_nanos_button(unsigned int button_mask, unsigned 
         default:
             UX_MENU_DISPLAY(0, menu_accounts, menu_accounts_preprocessor);
             break;
-    }    
+    }
     return 1;
 }
 
