@@ -30,6 +30,7 @@
 #include "cashaddr.h"
 #include "crc16.h"
 #include "base32.h"
+#include "usbd_hid_impl.h"
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -114,6 +115,22 @@ uint32_t coinIndex;
 uint32_t coinAccount;
 uint8_t hrp[20];
 
+extern struct {
+  unsigned short timeout; // up to 64k milliseconds (6 sec)
+} G_io_usb_ep_timeouts[IO_USB_MAX_ENDPOINTS];
+void io_usb_send_ep_wait(unsigned int ep, unsigned char* buf, unsigned int len, unsigned int timeout_cs) {
+    io_usb_send_ep(ep, buf, len, 20);
+
+    // wait until transfer timeout, or ended
+    while (G_io_usb_ep_timeouts[ep&0x7F].timeout) {
+        if (!io_seproxyhal_spi_is_status_sent()) {
+            io_seproxyhal_general_status();
+        }
+        io_seproxyhal_spi_recv(G_io_seproxyhal_spi_buffer, sizeof(G_io_seproxyhal_spi_buffer), 0);
+        io_seproxyhal_handle_event();
+    }
+}
+
 void type_address(char *address) {
     uint8_t i;
     uint32_t led_status;
@@ -124,20 +141,20 @@ void type_address(char *address) {
     // Insert EMPTY_REPORT CAPS_REPORT EMPTY_REPORT to avoid undesired capital
     // letter on KONSOLE
     led_status = G_led_status;
-    io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
-    io_usb_send_ep(1, CAPS_REPORT, 8, 20);
-    io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
+    io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
+    io_usb_send_ep_wait(HID_EPIN_ADDR, CAPS_REPORT, 8, 20);
+    io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
 
     // toggle shift if set.
     if (led_status & 2) {
-        io_usb_send_ep(1, CAPS_LOCK_REPORT, 8, 20);
-        io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, CAPS_LOCK_REPORT, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
     }
     for (i = 0; i < len; i++) {
         // If keyboard layout not initialized, use the default
         map_char(N_storage.keyboard_layout, address[i], report);
-        io_usb_send_ep(1, report, 8, 20);
-        io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, report, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
 
         if (N_storage.keyboard_layout == HID_MAPPING_QWERTY_INTL) {
             switch (address[i]) {
@@ -147,16 +164,16 @@ void type_address(char *address) {
             case '~':
             case '^':
                 // insert a extra space to validate the symbol
-                io_usb_send_ep(1, SPACE_REPORT, 8, 20);
-                io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
+                io_usb_send_ep_wait(HID_EPIN_ADDR, SPACE_REPORT, 8, 20);
+                io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
                 break;
             }
         }
     }
     // restore shift state
     if (led_status & 2) {
-        io_usb_send_ep(1, CAPS_LOCK_REPORT, 8, 20);
-        io_usb_send_ep(1, EMPTY_REPORT, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, CAPS_LOCK_REPORT, 8, 20);
+        io_usb_send_ep_wait(HID_EPIN_ADDR, EMPTY_REPORT, 8, 20);
     }
 }
 

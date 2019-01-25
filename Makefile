@@ -25,7 +25,7 @@ APP_LOAD_PARAMS=--appFlags 0x40 --path "" $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=0
 APPVERSION_N=0
-APPVERSION_P=1
+APPVERSION_P=2
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 ICONNAME=icon.gif
@@ -72,8 +72,7 @@ include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb
-
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl_kbd lib_u2f
 
 load: all
 	python -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
