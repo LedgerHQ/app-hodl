@@ -25,7 +25,7 @@ APP_LOAD_PARAMS=--appFlags 0x40 --path "" $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=0
 APPVERSION_N=0
-APPVERSION_P=2
+APPVERSION_P=3
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 ICONNAME=icon.gif
@@ -86,3 +86,5 @@ include $(BOLOS_SDK)/Makefile.rules
 #add dependency on custom makefile filename
 dep/%.d: %.c Makefile
 
+listvariants:
+	@echo VARIANTS APP hodl
