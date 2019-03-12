@@ -728,7 +728,32 @@ void menu_generate(uint32_t dummy) {
             derivePathLength = 5;            
             break;
     }
-    os_perso_derive_node_bip32(curve, derivePath, derivePathLength, privateComponent, NULL);
+
+    switch (curve)
+    {
+        case CX_CURVE_Ed25519:
+            switch (coinType)
+            {
+                case COIN_TYPE_STELLAR:
+                    os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10, curve, derivePath, derivePathLength, privateComponent, NULL, NULL, 0);
+                    break;
+            
+                default:
+                    THROW(EXCEPTION);
+                    break;
+            }
+            break;
+    
+        case CX_CURVE_256R1:
+        case CX_CURVE_256K1:
+            os_perso_derive_node_bip32(curve, derivePath, derivePathLength, privateComponent, NULL);
+            break;
+
+        default:
+            THROW(EXCEPTION);
+            break;
+    }
+
     cx_ecdsa_init_private_key(curve, privateComponent, 32, &privateKey);
     os_memset(privateComponent, 0, 32);
     cx_ecdsa_init_public_key(curve, NULL, 0, &publicKey);
@@ -899,7 +924,7 @@ const ux_menu_entry_t menu_accounts[] = {
     { NULL, menu_index_previous, 0, NULL, "Previous index", NULL, 0, 0},
     { NULL, menu_account_next, 0, NULL, "Next account", NULL, 0, 0},
     { NULL, menu_account_previous, 0, NULL, "Previous account", NULL, 0, 0},
-    {menu_coins, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
+    {menu_main, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
     UX_MENU_END};
 
 const ux_menu_entry_t menu_accounts_noindex[] = {
@@ -907,7 +932,7 @@ const ux_menu_entry_t menu_accounts_noindex[] = {
     { NULL, menu_generate, 0, NULL, "Generate", NULL, 0, 0},
     { NULL, menu_account_noindex_next, 0, NULL, "Next account", NULL, 0, 0},
     { NULL, menu_account_noindex_previous, 0, NULL, "Previous account", NULL, 0, 0},
-    {menu_coins, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
+    {menu_main, NULL, 0, &C_icon_back, "Back", NULL, 61, 40},
     UX_MENU_END};
 
 const ux_menu_entry_t menu_main[] = {
