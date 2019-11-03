@@ -115,14 +115,20 @@ uint32_t coinIndex;
 uint32_t coinAccount;
 uint8_t hrp[20];
 
+#if CX_APILEVEL < 10
 extern struct {
   unsigned short timeout; // up to 64k milliseconds (6 sec)
 } G_io_usb_ep_timeouts[IO_USB_MAX_ENDPOINTS];
+#endif
 void io_usb_send_ep_wait(unsigned int ep, unsigned char* buf, unsigned int len, unsigned int timeout_cs) {
     io_usb_send_ep(ep, buf, len, 20);
 
     // wait until transfer timeout, or ended
+#if CX_APILEVEL < 10
     while (G_io_usb_ep_timeouts[ep&0x7F].timeout) {
+#else
+    while (G_io_app.usb_ep_timeouts[ep&0x7F].timeout) {	   
+#endif	  
         if (!io_seproxyhal_spi_is_status_sent()) {
             io_seproxyhal_general_status();
         }
