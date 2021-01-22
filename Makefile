@@ -49,8 +49,6 @@ DEFINES   += LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERS
 
 DEFINES   += APPVERSION=\"$(APPVERSION)\"
 
-DEFINES   += CX_COMPLIANCE_141
-
 ##############
 #  Compiler  #
 ##############
@@ -72,7 +70,7 @@ include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl_kbd lib_u2f
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
 
 load: all
 	python -m ledgerblue.loadApp $(APP_LOAD_PARAMS)

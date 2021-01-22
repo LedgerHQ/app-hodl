@@ -468,9 +468,9 @@ void handle_btc_address(uint8_t *publicAddress) {
             scriptAddress[0] = 0x00;
             scriptAddress[1] = 0x14;
             cx_sha256_init(&u.sha);
-            cx_hash(&u.sha.header, CX_LAST, publicAddress, 33, checksumBuffer);
+            cx_hash(&u.sha.header, CX_LAST, publicAddress, 33, checksumBuffer, sizeof(checksumBuffer));
             cx_ripemd160_init(&u.rip);
-            cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, scriptAddress + 2);
+            cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, scriptAddress + 2, sizeof(scriptAddress) - 2);
             break;
         case ADDRESS_ENCODING_LEGACY:
             break;
@@ -502,19 +502,19 @@ void handle_btc_address(uint8_t *publicAddress) {
             switch(coinType) {
                 case COIN_TYPE_ARK:
                     cx_ripemd160_init(&u.rip);
-                    cx_hash(&u.rip.header, CX_LAST, addressData, addressLength, tmpBuffer + versionSize);
+                    cx_hash(&u.rip.header, CX_LAST, addressData, addressLength, tmpBuffer + versionSize, 20);
                     break;
                 default:
                     cx_sha256_init(&u.sha);
-                    cx_hash(&u.sha.header, CX_LAST, addressData, addressLength, checksumBuffer);
+                    cx_hash(&u.sha.header, CX_LAST, addressData, addressLength, checksumBuffer, sizeof(checksumBuffer));
                     cx_ripemd160_init(&u.rip);
-                    cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, tmpBuffer + versionSize);
+                    cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, tmpBuffer + versionSize, 20);
                     break;
             }
             cx_sha256_init(&u.sha);
-            cx_hash(&u.sha.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer);
+            cx_hash(&u.sha.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer, sizeof(checksumBuffer));
             cx_sha256_init(&u.sha);
-            cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+            cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer, sizeof(checksumBuffer));
             os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
             addressLength = hodl_encode_base58(alphabet, tmpBuffer, 24 + versionSize, G_io_apdu_buffer, 255);
             G_io_apdu_buffer[addressLength] = '\0';
@@ -537,15 +537,15 @@ void handle_tron_address(uint8_t *publicAddress) {
     uint8_t hash[32];
     uint8_t address[25];
     cx_keccak_init(&u.sha3, 256);
-    cx_hash((cx_hash_t *)&u.sha3, CX_LAST, publicAddress + 1, 64, hash);
+    cx_hash((cx_hash_t *)&u.sha3, CX_LAST, publicAddress + 1, 64, hash, sizeof(hash));
     os_memmove(address, hash + 11, 21);
     address[0] = 0x41;
     uint8_t checkSum[4];
     uint32_t addressLength;
     cx_sha256_init(&u.sha2);
-    cx_hash(&u.sha2, CX_LAST, address, 21, hash);
+    cx_hash(&u.sha2, CX_LAST, address, 21, hash, sizeof(hash));
     cx_sha256_init(&u.sha2);
-    cx_hash(&u.sha2, CX_LAST, hash, 32, hash);
+    cx_hash(&u.sha2, CX_LAST, hash, 32, hash, sizeof(hash));
     os_memmove(address+21, hash, 4);
     addressLength = hodl_encode_base58(N_BTC_BASE58_ALPHABET, address, 25, G_io_apdu_buffer, 255);
     G_io_apdu_buffer[addressLength] = '\0';
@@ -566,15 +566,15 @@ void handle_neo_address(uint8_t *publicAddress) {
     os_memmove(tmpBuffer + 1, publicAddress, 33);
     tmpBuffer[34] = 0xac;
     cx_sha256_init(&u.sha);
-    cx_hash(&u.sha.header, CX_LAST, tmpBuffer, 35, checksumBuffer);
+    cx_hash(&u.sha.header, CX_LAST, tmpBuffer, 35, checksumBuffer, sizeof(checksumBuffer));
     cx_ripemd160_init(&u.rip);    
-    cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, addressBuffer + 1);
+    cx_hash(&u.rip.header, CX_LAST, checksumBuffer, 32, addressBuffer + 1, 20);
     checksumBuffer[0] = 0x17;
     os_memmove(checksumBuffer + 1, addressBuffer + 1, 20);
     cx_sha256_init(&u.sha);
-    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 21, checksumBuffer);
+    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 21, checksumBuffer, sizeof(checksumBuffer));
     cx_sha256_init(&u.sha);
-    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer);    
+    cx_hash(&u.sha.header, CX_LAST, checksumBuffer, 32, checksumBuffer, sizeof(checksumBuffer));
     os_memmove(addressBuffer + 1 + 20, checksumBuffer, 4);
     addressLength = hodl_encode_base58(N_BTC_BASE58_ALPHABET, addressBuffer, 25, G_io_apdu_buffer, 255);
     G_io_apdu_buffer[addressLength] = '\0';
