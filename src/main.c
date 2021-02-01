@@ -22,7 +22,7 @@
 #include "os_io_seproxyhal.h"
 #include "string.h"
 
-#include "glyphs.h"
+#include "ux.h"
 
 #include "hid_mapping.h"
 #include "base58.h"
