@@ -685,7 +685,7 @@ void menu_generate(uint32_t dummy) {
             derivePath[1] = 0x80000069;
             break;
         case COIN_TYPE_VERTCOIN:
-            derivePath[1] = 0x8000001c;
+            derivePath[1] = 0x80000080;
             break;
         case COIN_TYPE_VIACOIN:
             derivePath[1] = 0x8000000e;
